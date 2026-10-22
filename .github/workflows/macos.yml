@@ -139,12 +139,14 @@ jobs:
       - name: Run pre-build steps
         if: inputs.pre_build != ''
         env:
+          GH_TOKEN: ${{ github.token }}
           PRE_BUILD: ${{ inputs.pre_build }}
           DEVICE_DIR: ${{ github.workspace }}/device
         run: bash -euo pipefail -c "$PRE_BUILD"
 
       - name: Build kernel
         env:
+          GH_TOKEN: ${{ github.token }}
           IPSW_URL: ${{ inputs.ipsw_url }}
         run: |
           args=()
@@ -181,6 +183,7 @@ jobs:
           ./unixnu build payload "${args[@]}"
 
       - name: Upload kernel and payload
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: unixnu-${{ inputs.defconfig }}
